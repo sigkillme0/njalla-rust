@@ -43,12 +43,22 @@ impl NjallaClient {
 
     /// Creates a client from the `NJALLA_API_TOKEN` environment variable.
     ///
+    /// Lookup order (first match wins):
+    /// 1. `NJALLA_API_TOKEN` already in environment
+    /// 2. `.env` in current directory
+    /// 3. `~/.config/njalla/.env`
+    ///
     /// # Errors
     ///
     /// Returns `Error::Env` if `NJALLA_API_TOKEN` is not set, or
     /// `Error::Http` if the HTTP client fails to initialize.
     pub fn from_env() -> Result<Self> {
         dotenvy::dotenv().ok();
+        if let Some(home) = std::env::var_os("HOME") {
+            let mut path = std::path::PathBuf::from(home);
+            path.push(".config/njalla/.env");
+            dotenvy::from_path(&path).ok();
+        }
         Self::new(std::env::var("NJALLA_API_TOKEN")?)
     }
 
