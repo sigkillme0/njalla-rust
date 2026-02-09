@@ -121,7 +121,20 @@ fn dump<T: serde::Serialize>(val: &T) -> njalla::error::Result<()> {
 
 #[tokio::main]
 async fn main() {
-    let cli = Cli::parse();
+    let cli = match Cli::try_parse() {
+        Ok(cli) => cli,
+        Err(e) => {
+            let _ = e.print();
+            match e.kind() {
+                clap::error::ErrorKind::DisplayHelp
+                | clap::error::ErrorKind::DisplayVersion
+                | clap::error::ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand => {
+                    std::process::exit(0)
+                }
+                _ => std::process::exit(2),
+            }
+        }
+    };
 
     let client = match NjallaClient::from_env() {
         Ok(c) => c,
@@ -132,17 +145,17 @@ async fn main() {
         }
     };
 
-    if let Err(e) = run(cli, &client).await {
+    if let Err(e) = run(cli.cmd, &client).await {
         eprintln!("error: {e}");
         std::process::exit(1);
     }
 }
 
-async fn run(cli: Cli, client: &NjallaClient) -> njalla::error::Result<()> {
-    match cli.cmd {
-        Cmd::Domain(cmd) => run_domain(cmd, client).await,
-        Cmd::Record(cmd) => run_record(cmd, client).await,
-        Cmd::Server(cmd) => run_server(cmd, client).await,
+async fn run(cmd: Cmd, client: &NjallaClient) -> njalla::error::Result<()> {
+    match cmd {
+        Cmd::Domain(sub) => run_domain(sub, client).await,
+        Cmd::Record(sub) => run_record(sub, client).await,
+        Cmd::Server(sub) => run_server(sub, client).await,
     }
 }
 
