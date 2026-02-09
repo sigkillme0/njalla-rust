@@ -2,13 +2,38 @@
 
 rust toolkit for the [njal.la](https://njal.la) api. library + cli.
 
-## setup
-
-generate an api token from your njalla account settings, then:
+## install
 
 ```sh
-echo 'NJALLA_API_TOKEN=your-token-here' >> .env
+cargo install --path .
 ```
+
+to update after a `git pull`:
+
+```sh
+cargo install --path . --force
+```
+
+to uninstall:
+
+```sh
+cargo uninstall njalla
+```
+
+## config
+
+generate an api token from your [njalla account settings](https://njal.la/settings/api/), then either:
+
+```sh
+# option a: shell environment (recommended)
+echo 'export NJALLA_API_TOKEN=your-token' >> ~/.bashrc
+
+# option b: config file
+mkdir -p ~/.config/njalla
+echo 'NJALLA_API_TOKEN=your-token' > ~/.config/njalla/.env
+```
+
+lookup order: env var → `.env` in cwd → `~/.config/njalla/.env`
 
 ## usage
 
@@ -64,7 +89,7 @@ let created = client.add_record("example.com", &NewRecord {
 client.remove_record("example.com", created.id.as_deref().unwrap()).await?;
 ```
 
-## building
+## building from source
 
 ```sh
 cargo build --release
