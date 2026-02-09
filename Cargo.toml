@@ -1,0 +1,38 @@
+[package]
+name = "njalla"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.93"
+description = "rust toolkit for the njal.la api"
+license = "WTFPL"
+publish = false
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+dotenvy = "0.15.7"
+reqwest = { version = "0.13.1", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "deny"
+trivial_casts = "deny"
+trivial_numeric_casts = "deny"
+unused_extern_crates = "deny"
+unused_import_braces = "deny"
+unused_qualifications = "deny"
+rust_2018_idioms = { level = "deny", priority = -1 }
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+cargo = { level = "warn", priority = -1 }
+multiple_crate_versions = "allow"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "warn"
